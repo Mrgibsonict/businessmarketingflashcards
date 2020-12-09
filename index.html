@@ -1,0 +1,701 @@
+<html>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+ 	<head>
+ 	<title>GCSE Computer Science Flash Cards</title>
+	    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.0.272/jspdf.debug.js"></script>
+		<style>
+			.clear{clear: both}
+			body {
+				font-family: Arial;
+				background: #ccc;
+				margin-top: 0px;
+			}
+			.scene {
+				width: 375px;
+				height: 525px;
+				margin: auto;
+				margin-top: 20px;
+				perspective: 2000px;
+			}
+			.card {
+				width: 100%;
+				height: 100%;
+				transition: transform 1s, opacity 1s;
+				transform-style: preserve-3d;
+				cursor: pointer;
+				position: relative;
+			}
+			.none{
+				width: 100%;
+				height: 100%;
+				position: relative;
+				top:0px;
+				left:0px;
+				z-index: -1;
+				text-align: center;
+				opacity: 0;
+				transition: opacity 1s;
+				border-radius: 20px;
+				border:3px solid #666;
+				padding: 40px;
+				padding-top: 80px;
+				box-sizing: border-box;
+				display: none;
+			}
+			.card.is-flipped {
+				transform: rotateY(180deg);
+			}
+			.card__face {
+				position: absolute;
+				width: 100%;
+				height: 100%;
+				padding: 40px;
+				padding-top: 80px;
+				box-sizing: border-box;
+				border-radius: 20px;
+				color: black;
+				text-align: center;
+				font-weight: bold;
+				font-size: 36px;
+				-webkit-backface-visibility: hidden;
+				backface-visibility: hidden;
+			}
+			.card__face--front {
+				background: #fff;
+			}
+			.card__face--back {
+				background: #FD8603;
+				color:#fff;
+				transform: rotateY(180deg);
+				padding-top: 50px;
+			}
+
+			#deets{				
+				position: absolute;
+				top: 0px;
+				left: 0px;
+				font-size: 14px;
+				padding: 12px;
+				padding-right: 20px;
+				background: #FD8603;
+				color: #fff;
+				border-radius: 20px 0px;
+				width: auto;
+				text-align: left;
+				font-weight: 100;
+				max-width: 300px;
+				padding-left: 20px;
+				padding-top: 14px;
+			}
+			#bdeets{
+				position: absolute;
+				bottom: 0px;
+				right: 0px;
+				font-size: 18px;
+				padding: 12px;
+				padding-right:20px;
+				background: #fff;
+				color: #FD8603;
+				border-radius: 20px 0px;
+				width: auto;
+				text-align: center;
+				font-weight: 100;
+				font-style: italic;
+			}
+			#bquestion{
+				font-size: 32px
+			}
+			#answer{
+				font-size: 18px;
+			}
+			#resetNonConfident{
+				padding: 15px;
+				background: #000;
+				border-radius: 10px;
+				font-size: 22px;
+				color: #fff;
+				cursor: hand;
+			}
+			#downloadquestiona{
+				padding: 15px;
+				background: #000;
+				border-radius: 10px;
+				font-size: 22px;
+				color: #fff;
+				cursor: hand;
+			}
+			#restart{
+				padding: 15px;
+				background: #000;
+				border-radius: 10px;
+				font-size: 22px;
+				color: #f00;
+				cursor: hand;
+			}
+			.u0 #deets, .card__face--back.u0{
+				background: #D00000
+			}
+			.u0 #bdeets{
+				color: #D00000
+			}
+
+			.u1 #deets, .card__face--back.u1{
+				background: #FFBA08
+			}
+			.u1 #bdeets{
+				color: #FFBA08
+			}
+			
+			.u2 #deets, .card__face--back.u2{
+				background: #3F88C5
+			}
+			.u2 #bdeets{
+				color: #3F88C5
+			}
+			
+			.u3 #deets, .card__face--back.u3{
+				background: #032B43
+			}
+			.u3 #bdeets{
+				color: #032B43
+			}
+			
+			.u4 #deets, .card__face--back.u4{
+				background: #136F63
+			}
+			.u4 #bdeets{
+				color: #136F63
+			}
+			
+			.u4 #deets, .card__face--back.u4{
+				background: #380036
+			}
+			.u4 #bdeets{
+				color: #380036
+			}
+
+			.u5 #deets, .card__face--back.u5{
+				background: #040404
+			}
+			.u5 #bdeets{
+				color: #040404
+			}
+			
+			.u6 #deets, .card__face--back.u6{
+				background: #FF499E
+			}
+			.u6 #bdeets{
+				color: #FF499E
+			}
+			
+			#loader{
+				position: absolute;
+				width: 100%;
+				height: 100%;
+				background: #ccc;
+				z-index: 999;
+				top:0px;
+				left:0px;
+				transition: opacity 1s;
+				opacity: 1;
+				padding: 10px;
+				box-sizing: border-box;
+			}
+			#loader .lcard{
+				width: 375px;
+				height: 525px;
+				padding: 40px;
+				padding-top: 50px;
+				box-sizing: border-box;
+				border-radius: 20px;
+				color: black;
+				text-align: left;
+				font-weight: bold;
+				font-size: 36px;
+				-webkit-backface-visibility: hidden;
+				backface-visibility: hidden;
+				background: #fff;
+				margin: auto;
+				margin-top: 70px;
+				position: relative;
+			}
+			#loader .lcard .subject{
+				width: 100%;
+				font-size: 16px;
+				color:#000;
+				text-align: left;
+				padding-bottom: 10px;
+				font-weight: normal;
+			}
+			#loader .lcard .subject input{
+				float: right
+			}
+			#loader .lcard .play{
+				background: #000;
+				border-radius: 0px 0px 20px 20px;
+				width: 100%;
+				position: absolute;
+				bottom: 0px;
+				left: 0px;
+				height: 80px;
+				color: #fff;
+				text-align: center;
+				font-size: 30px;
+				padding-top: 23px;
+				box-sizing: border-box;
+				cursor: hand;
+			}
+			
+				.next{
+					position: relative;
+					font-size: 30px;
+					color: #fff;
+					font-size: bold;
+					animation: opacity ease 1s;
+					-webkit-animation: opacity ease 1s;
+					width: 48%;
+					float: right;
+					text-align: center;
+					padding-top: 8px;
+					background: #000;
+					padding-bottom: 8px;
+					border-radius: 10px;
+					margin-top: 20px;
+					cursor: hand;
+					
+				}
+				.next.fade, .prev.fade{
+					opacity: 0.5;
+					cursor: not-allowed;
+				}
+				.prev{
+					position: relative;
+					font-size: 30px;
+					color: #fff;
+					font-size: bold;
+					animation: opacity ease 1s;
+					-webkit-animation: opacity ease 1s;
+					width: 48%;
+					float: left;
+					text-align: center;
+					padding-top: 8px;
+					background: #000;
+					padding-bottom: 8px;
+					border-radius: 10px;
+					margin-top: 20px;
+					cursor: hand;
+				}
+				.status{
+					display: block;
+					text-align: center;
+					color: #fff;
+					margin-bottom: 15px;
+				}
+				.status div{
+					display: inline-block;
+					background: rgba(0,0,0,0.5);
+					margin-left: 5px;
+					margin-right: 5px;
+					padding: 7px;
+					border-radius: 5px;
+				}
+				#qrestart{
+					font-size: 22px;
+					padding-left: 17px;
+					padding-right: 17px;
+					background: #D00000;
+					opacity: 1;
+					cursor: pointer;
+				}
+				.limiter{max-width: 255px;float: left;}
+				#topics{margin-top: 20px;}
+		</style>
+		
+	</head>
+	
+	<body>
+
+		<div id="loader">
+			<div class="u0">
+		    	<div id="loadSysArch" class="lcard">
+			    	Select Topics
+					<div id="topics">
+						
+						
+					</div>
+					<div class="play">Play</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="scene scene--card">
+			
+			<div class="status">
+				<div class="">🃏 <span class="remaining">10</span></div>
+				<div class="">👎 <span class="forgot">10</span></div>
+				<div class="">👍 <span class="remembered">10</span></div>
+				<div id="qrestart" class="">&#8634;</div>
+				
+			</div>
+			
+		  	<div class="card">
+		    	<div class="card__face card__face--front">
+			    	<div id="deets">d</div>
+					<div id="bdeets">d</div>
+			    	<div id="question">q</div>
+			    	
+		    	</div>
+		    	<div class="card__face card__face--back">
+			    	<div id="bquestion">q</div>
+			    	<br>
+			    	<div id="answer">a</div>
+			    	
+		    	</div>
+		    			    	
+			</div>
+			<div class="none">
+				
+				<h1> No Cards Left </h1>
+				<div id="resetNonConfident">Replay 👎 cards</div>
+				<br>
+				<div id="downloadquestiona">Download 👎 questions</div>
+				<br>
+				<div id="restart">Restart</div>
+				
+			</div>
+			<div style="clear: both"></div>
+			<div class="next">Know it 👍</div>
+			<div class="prev">Forgot it 👎</div>
+
+
+		</div>
+
+	</body>
+	
+	<script src="questions.json.js"></script>
+	
+		<script>
+			
+			var loaderdiv = document.querySelector('#loader');
+			var loaderUp = false	
+			
+			var loadUnit = ""
+			var scene = document.querySelector('.scene');
+
+			
+			Array.prototype.randomize = function() {
+			  var t, j, ret = this.slice(0), i = ret.length;
+			  while(--i > 0) {
+			    t = ret[j = Math.round(Math.random() * i)];
+			    ret[j] = ret[i];
+			    ret[i] = t;
+			  }
+			  return ret;
+			};
+			
+			var currentCard = 0
+		
+			var card = document.querySelector('.card');
+			var next = document.querySelector('.next');
+			var prev = document.querySelector('.prev');
+			var none = document.querySelector('.none');
+
+			var statustotal = document.querySelector('.remaining');
+			var statusforgot = document.querySelector('.forgot');
+			var statusremembered = document.querySelector('.remembered');
+
+			
+			var play = document.querySelector('.play');
+			
+			var impactmodtech = document.getElementById('impactmodtech');
+			var moderntech = document.getElementById('moderntech');
+			var nettopology = document.getElementById('nettopology');
+
+			var front = document.querySelector('.card__face--front');
+			var back = document.querySelector('.card__face--back');
+
+			var replayNC = document.querySelector('#resetNonConfident')
+			var downloadNC = document.querySelector('#downloadquestiona')
+			var restart = document.querySelector('#restart')
+			var qrestart = document.querySelector('#qrestart')
+			var selectedCards = []
+			var confidentCards = []
+			var notConfidentCards = []
+			
+			var topics = []
+			
+			
+			
+			for (let key in jsonData){
+			  let object = jsonData[key]
+
+			  if (!topics.includes(object["Topic"])){
+				  var test = String(object["topic"])
+			    topics.push(object["Topic"]);
+			    console.log(object["Topic"])
+			    console.log(object["Question"])}
+			  
+			}
+			topics.sort()
+			var topicLength = topics.length;
+			for (var i = 0; i < topicLength; i++) {	
+				if(typeof topics[i] === "undefined"){
+					var newDiv = "<div style=\"display:none\" class=\"subject\">"+topics[i]+" <input id=\""+i+"\" type=\"checkbox\"/></div>"			
+					document.getElementById('topics').innerHTML+= newDiv;
+				}else{
+					var newDiv = "<div class=\"subject\"><div class='limiter'>"+topics[i]+"</div> <input id=\""+i+"\" type=\"checkbox\"/><div class='clear'></div></div>"			
+					document.getElementById('topics').innerHTML+= newDiv;
+				}
+			}
+			
+			
+			var ids = topics[0]
+			selectedCards = jsonData.filter( i => ids.includes( i.Topic ) ).randomize();
+			
+
+			play.addEventListener( 'click', function() {
+				
+				selectedCards = []
+				nids = []
+				
+				
+				var topicLength = topics.length;
+				for (var i = 0; i < topicLength; i++) {	
+					let tempCheck = document.getElementById(i);
+					if(tempCheck.checked){
+						nids.push(topics[i])
+					}
+					front.classList.remove("u"+i);
+					back.classList.remove("u"+i);
+				}
+				
+				selectedCards = jsonData.filter( i => nids.includes( i.Topic ) ).randomize();
+				console.log(selectedCards)
+				resetCard()
+				next.classList.add("fade")
+				prev.classList.add("fade")
+				
+				for (var i = 0; i < topicLength; i++) {	
+					if(selectedCards[currentCard].Topic == topics[i]){
+						back.classList.add("u"+i);
+						front.classList.add("u"+i);
+					}
+				}
+				
+				loaderdiv.style.display = loaderdiv.style.display == "none" ? "block" : "none";
+				updateStatus()
+			});
+
+			function resetCard(){
+				if(card.classList.contains("is-flipped")){
+					 card.classList.remove("is-flipped")
+					 console.log(selectedCards[0].Question)
+					 				
+					
+				}
+				document.getElementById("question").innerHTML= selectedCards[currentCard].Question; 
+					 document.getElementById("deets").innerHTML= selectedCards[currentCard].Topic;
+					 document.getElementById("bdeets").innerHTML= selectedCards[currentCard].subtopic; 
+					 document.getElementById("answer").innerHTML= selectedCards[currentCard].answer;document.getElementById("bquestion").innerHTML= selectedCards[currentCard].Question;
+
+				
+			}
+
+			var card = document.querySelector('.card');
+			
+			card.addEventListener( 'click', function() {
+				
+				if(card.classList.contains("is-flipped")){
+					card.classList.toggle('is-flipped');
+					next.classList.add("fade")
+					prev.classList.add("fade")
+				}else{
+					card.classList.toggle('is-flipped');
+					next.classList.remove("fade")
+					prev.classList.remove("fade")
+				}
+				
+			
+				
+
+			});
+			
+       		
+       		document.getElementById("question").innerHTML= selectedCards[currentCard].Question;
+	   		document.getElementById("bquestion").innerHTML= selectedCards[currentCard].Question; 
+	   		document.getElementById("answer").innerHTML= selectedCards[currentCard].answer; 
+	   		document.getElementById("deets").innerHTML= selectedCards[currentCard].Topic; 
+	   		document.getElementById("bdeets").innerHTML= selectedCards[currentCard].subtopic; 
+
+			next.addEventListener( 'click', function() {
+				if(next.classList.contains("fade")){
+					
+						
+				}else{
+					if(confidentCards.includes(selectedCards[currentCard])){
+						
+					}else{
+						confidentCards.push(selectedCards[currentCard])
+					}
+					selectedCards.shift()
+					showNextCard()
+				}	
+			});
+			
+			prev.addEventListener( 'click', function() {
+				if(next.classList.contains("fade")){
+					
+						
+				}else{
+					if(notConfidentCards.includes(selectedCards[currentCard])){
+						
+					}else{
+						notConfidentCards.push(selectedCards[currentCard])
+					}
+					selectedCards.shift()
+					showNextCard()
+				}
+			});
+			
+			replayNC.addEventListener( 'click', function() {
+				
+				selectedCards.push(...notConfidentCards)
+				notConfidentCards = []
+				none.style.opacity = 0
+				setTimeout(() => { card.style.display = card.style.display == "none" ? "block" : "none"; none.style.display = "none"}, 1000);
+				setTimeout(() => {card.style.opacity = 1}, 2000);
+				showNextCard()
+				
+			});
+			
+			
+			restart.addEventListener( 'click', function() {
+				
+				loaderdiv.style.display = loaderdiv.style.display == "none" ? "block" : "none";
+				notConfidentCards = []
+				confidentCards = []
+				selectedCards = jsonData.filter( i => ids.includes( i.Topic ) ).randomize();
+				none.style.opacity = 0
+				setTimeout(() => { card.style.display = card.style.display == "none" ? "block" : "none"; none.style.display = "none"}, 1000);
+				setTimeout(() => {card.style.opacity = 1}, 2000);
+				resetCard()
+				resetStatus()
+				
+			});
+			
+			
+			qrestart.addEventListener( 'click', function() {
+				
+				loaderdiv.style.display = loaderdiv.style.display == "none" ? "block" : "none";
+				notConfidentCards = []
+				confidentCards = []
+				selectedCards = jsonData.filter( i => ids.includes( i.Topic ) ).randomize();
+				resetCard()
+				resetStatus()
+				
+			});
+			
+			
+			downloadNC.addEventListener( 'click', function() {
+				
+				var doc = new jsPDF('p', 'pt', 'a4')
+				doc.setFontSize(12)
+
+				pageHeight= doc.internal.pageSize.height;
+				
+				y = 40
+
+				
+				notConfidentCards.forEach(function (arrayItem) {
+				    if (y >= pageHeight)
+					{
+					  doc.addPage();
+					  y = 40 // Restart height position
+					}
+
+					doc.text(20, y, arrayItem.Question)
+	
+					y = y + 20
+				});
+
+				
+				doc.save("questions.pdf")
+				
+			});
+			
+			
+			function showNextCard(){
+				
+				next.classList.add("fade")
+				prev.classList.add("fade")
+				
+				if (selectedCards.length > 0){
+				
+					var topicLength = topics.length;
+					for (var i = 0; i < topicLength; i++) {	
+							front.classList.remove("u"+i);
+					}
+				
+									
+					for (var i = 0; i < topicLength; i++) {	
+						if(selectedCards[currentCard].Topic == topics[i]){
+							front.classList.add("u"+i);
+						}
+					}
+				
+					document.getElementById("question").innerHTML= selectedCards[currentCard].Question; 
+					document.getElementById("deets").innerHTML= selectedCards[currentCard].Topic;
+		   			document.getElementById("bdeets").innerHTML= selectedCards[currentCard].subtopic; 
+					card.classList.toggle('is-flipped');
+					setTimeout(() => { 
+						document.getElementById("answer").innerHTML= selectedCards[currentCard].answer;document.getElementById("bquestion").innerHTML= selectedCards[currentCard].Question; 
+						
+						
+						for (var i = 0; i < topicLength; i++) {	
+								back.classList.remove("u"+i);
+						}
+						
+
+										
+						for (var i = 0; i < topicLength; i++) {	
+							if(selectedCards[currentCard].Topic == topics[i]){
+								back.classList.add("u"+i);
+							}
+						}
+						
+						}, 1000);
+				
+				}else{
+					none.style.display = "block"
+					card.style.opacity = 0
+					setTimeout(() => { card.style.display = card.style.display == "none" ? "block" : "none"; none.style.opacity = 1 }, 1000);
+					if(notConfidentCards.length < 1){
+						replayNC.style.display = "none"
+					}else{
+						replayNC.style.display = "block"
+					}
+				}
+				updateStatus()
+
+			}
+
+			function updateStatus(){
+				
+				statustotal.innerHTML= selectedCards.length; 
+				statusremembered.innerHTML= confidentCards.length;
+				statusforgot.innerHTML= notConfidentCards.length;
+				
+				
+			}
+			
+			function resetStatus(){
+				statustotal.innerHTML= 0;
+				statusremembered.innerHTML= 0;
+				statusforgot.innerHTML= 0;
+			}
+			
+	</script>
+	
+</html>
